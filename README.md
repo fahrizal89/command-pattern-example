@@ -37,6 +37,11 @@ public class LightOnCommand implements Command {
     public void execute() {
         light.on();
     }
+
+    @Override
+    public void undo() {
+        light.off();
+    }
 }
 
 public class LightOffCommand implements Command {
@@ -51,6 +56,11 @@ public class LightOffCommand implements Command {
     public void execute() {
         light.off();
     }
+
+    @Override
+    public void undo() {
+        light.on();
+    }
 }
 ```
 
@@ -58,6 +68,7 @@ public class LightOffCommand implements Command {
 public class RemoteControl {
     Command[] onCommands;
     Command[] offCommands;
+    Command undoCommand;
 
     public RemoteControl() {
         onCommands = new Command[7];
@@ -75,6 +86,7 @@ public class RemoteControl {
             return;
         }
         onCommands[slot].execute();
+        undoCommand = onCommands[slot];
     }
 
     public void offCommandWasPushed(int slot){
@@ -83,34 +95,45 @@ public class RemoteControl {
             return;
         }
         offCommands[slot].execute();
+        undoCommand = onCommands[slot];
     }
 
     private void errorCommand(){
         System.out.println("--command not exist--");
+    }
+
+    public void undoCommandWasPushed(){
+        undoCommand.undo();
     }
 }
 ```
 
 ```
 public static void main(String[] args) {
-        Light light = new Light();
-        LightOnCommand lightOn = new LightOnCommand(light);
-        LightOffCommand lightOff = new LightOffCommand(light);
+    Light light = new Light();
+    LightOnCommand lightOn = new LightOnCommand(light);
+    LightOffCommand lightOff = new LightOffCommand(light);
 
-        GarageDoor garageDoor = new GarageDoor();
-        GarageDoorUpCommand garageDoorUp = new GarageDoorUpCommand(garageDoor);
-        GarageDoorDownCommand garageDoorDown = new GarageDoorDownCommand(garageDoor);
+    GarageDoor garageDoor = new GarageDoor();
+    GarageDoorUpCommand garageDoorUp = new GarageDoorUpCommand(garageDoor);
+    GarageDoorDownCommand garageDoorDown = new GarageDoorDownCommand(garageDoor);
 
-        RemoteControl remoteControl = new RemoteControl();
-        remoteControl.setCommand(0,lightOn,lightOff);
-        remoteControl.setCommand(1,garageDoorUp, garageDoorDown);
+    RemoteControl remoteControl = new RemoteControl();
+    remoteControl.setCommand(0,lightOn,lightOff);
+    remoteControl.setCommand(1,garageDoorUp, garageDoorDown);
 
-        remoteControl.onCommandWasPushed(0);
-        remoteControl.onCommandWasPushed(1);
-        remoteControl.onCommandWasPushed(2);
-        remoteControl.offCommandWasPushed(0);
-        remoteControl.offCommandWasPushed(1);
-    }
+
+    remoteControl.onCommandWasPushed(0);
+    remoteControl.onCommandWasPushed(1);
+    remoteControl.onCommandWasPushed(2);
+
+    remoteControl.offCommandWasPushed(0);
+    remoteControl.offCommandWasPushed(1);
+    remoteControl.onCommandWasPushed(1);
+
+    System.out.println("--undo--");
+    remoteControl.undoCommandWasPushed();
+}
 ```
 
 # output
@@ -119,5 +142,8 @@ Light is turn on
 Garage door is up
 --command not exist--
 Light is turn off
+Garage door is down
+Garage door is up
+--undo--
 Garage door is down
 ```
