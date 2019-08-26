@@ -30,7 +30,12 @@ public class Main {
         remoteControl.onCommandWasPushed(0);
         remoteControl.onCommandWasPushed(1);
         remoteControl.onCommandWasPushed(2);
+
         remoteControl.offCommandWasPushed(0);
         remoteControl.offCommandWasPushed(1);
+        remoteControl.onCommandWasPushed(1);
+
+        System.out.println("--undo--");
+        remoteControl.undoCommandWasPushed();
     }
 }

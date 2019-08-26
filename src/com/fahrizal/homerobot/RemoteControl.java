@@ -5,6 +5,7 @@ import com.fahrizal.homerobot.commands.Command;
 public class RemoteControl {
     Command[] onCommands;
     Command[] offCommands;
+    Command undoCommand;
 
     public RemoteControl() {
         onCommands = new Command[7];
@@ -22,6 +23,7 @@ public class RemoteControl {
             return;
         }
         onCommands[slot].execute();
+        undoCommand = onCommands[slot];
     }
 
     public void offCommandWasPushed(int slot){
@@ -30,9 +32,14 @@ public class RemoteControl {
             return;
         }
         offCommands[slot].execute();
+        undoCommand = onCommands[slot];
     }
 
     private void errorCommand(){
         System.out.println("--command not exist--");
+    }
+
+    public void undoCommandWasPushed(){
+        undoCommand.undo();
     }
 }
