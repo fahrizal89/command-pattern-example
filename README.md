@@ -1,17 +1,23 @@
-# command-pattern-example
+# Command Pattern
 
-Command Pattern is encapsulates request an an object, thereby letting you to parameterize other objects with different request.
+Command Pattern is encapsulates request an an object, thereby letting you to parameterize other objects with different request and you can reuse them or implementation undo.
 
-Decouple job of receiver and executor. Receiver doesn't know what's executor doing.
+Client -> Invoker -> Receiver
 
-For example I create HomeRobot App.
+For example we create HomeRobot App.
 
+HomeRobot can manage furniture like a lamp, door, electric window etc. We can give command to some furniture and don't worry what is doing by furniture.
+
+Create interface for implementaion in command
 ```
 public interface Command {
     void execute();
+    
+    void undo();
 }
 ```
 
+Create object of furniture
 ```
 public class Light {
     public void on(){
@@ -24,6 +30,7 @@ public class Light {
 }
 ```
 
+Create commands of furniture with implements Command
 ```
 public class LightOnCommand implements Command {
 
